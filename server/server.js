@@ -1,13 +1,13 @@
 // Importa los módulos necesarios
-import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { dbconnect } from "./config/database/db.js";
+import { dbconnect } from "./src/config/database/db.js";
 
-import reservasRoutes from './routes/reservas.js';
-import authRoutes from './routes/auth.js';
+import reservasRoutes from './src/routes/reservas.js';
+import authRoutes from './src/routes/auth.js';
 
 // Configurar dotenv antes de usar variables de entorno
 dotenv.config();

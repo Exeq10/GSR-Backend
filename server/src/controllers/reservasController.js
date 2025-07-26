@@ -3,7 +3,27 @@ import axios from "axios";
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-
+/**
+ * @swagger
+ * /reservas/fechas-disponibles:
+ *   get:
+ *     summary: Obtener las fechas que ya están reservadas
+ *     tags: [Reservas]
+ *     responses:
+ *       200:
+ *         description: Fechas reservadas obtenidas correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 fechasReservadas:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Error al obtener fechas
+ */
 export const getFechasDisponibles = async (req, res) => {
   try {
     const reservas = await Reserva.find({}, "fechaReserva");
@@ -17,6 +37,61 @@ export const getFechasDisponibles = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /reservas:
+ *   post:
+ *     summary: Crear una preferencia de pago para una nueva reserva
+ *     tags: [Reservas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nombreCliente
+ *               - apellidoCliente
+ *               - celularCliente
+ *               - fechaReserva
+ *               - tipoEvento
+ *               - senia
+ *               - cantidadPersonas
+ *             properties:
+ *               nombreCliente:
+ *                 type: string
+ *               apellidoCliente:
+ *                 type: string
+ *               celularCliente:
+ *                 type: string
+ *               fechaReserva:
+ *                 type: string
+ *                 example: "2025-08-15"
+ *               tipoEvento:
+ *                 type: string
+ *               senia:
+ *                 type: number
+ *               cantidadPersonas:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Preferencia creada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                 preferenceId:
+ *                   type: string
+ *                 initPoint:
+ *                   type: string
+ *       400:
+ *         description: Faltan datos requeridos o fecha ya reservada
+ *       500:
+ *         description: Error al crear preferencia de pago
+ */
 export const crearReserva = async (req, res) => {
   try {
     const {
@@ -88,7 +163,31 @@ export const crearReserva = async (req, res) => {
     res.status(500).json({ mensaje: "Error al crear preferencia de pago" });
   }
 };
-
+/**
+ * @swagger
+ * /webhook/mp:
+ *   post:
+ *     summary: Webhook para procesar notificaciones de MercadoPago
+ *     tags: [Reservas]
+ *     parameters:
+ *       - name: type
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: data.id
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Reserva confirmada y guardada
+ *       200:
+ *         description: Evento ignorado o fecha ya reservada
+ *       500:
+ *         description: Error al procesar el webhook
+ */
 export const webhookMP = async (req, res) => {
   try {
     const { type, "data.id": paymentId } = req.query;
@@ -144,11 +243,23 @@ export const webhookMP = async (req, res) => {
  * /reservas:
  *   get:
  *     summary: Obtener todas las reservas
- *     tags:
- *       - Reservas
+ *     tags: [Reservas]
  *     responses:
  *       200:
- *         description: Lista de reservas
+ *         description: Lista de reservas obtenida correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                 reservas:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       500:
+ *         description: Error al obtener las reservas
  */
 export const getTodasLasReservas = async (req, res) => {
   try {

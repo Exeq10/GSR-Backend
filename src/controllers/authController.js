@@ -173,7 +173,7 @@ export const register = async (req, res) => {
     await newUser.save();
 
     res.status(201).json({
-      message: 'Usuario registrado exitosamente',
+      message: 'Usuario registrado exitosamente crack',
       user: {
         id: newUser._id,
         username: newUser.username,
